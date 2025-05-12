@@ -1,0 +1,48 @@
+from collections import deque
+
+def bfs(graph, start_node):
+    visited = set()
+    queue = deque([start_node])
+    visited.add(start_node)
+    traversal_order = []
+    while queue:
+        node = queue.popleft()
+        traversal_order.append(node)
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+    return traversal_order
+
+def main():
+    graph = {
+        'A': ['B', 'C'],
+        'B': ['A', 'D', 'E'],
+        'C': ['A', 'F'],
+        'D': ['B'],
+        'E': ['B', 'F'],
+        'F': ['C', 'E']
+    }
+    start_node = 'A'
+    print(f"BFS Traversal starting from node {start_node}:")
+    bfs_traversal = bfs(graph, start_node)
+    print(bfs_traversal)
+    graph2 = {
+        'A': ['B', 'C'],
+        'B': ['A', 'D'],
+        'C': ['A'],
+        'D': ['B'],
+        'E': ['F'],
+        'F': ['E']
+    }
+    start_node2 = 'A'
+    print(f"BFS Traversal of Graph 2, starting from node {start_node2}")
+    bfs_traversal2 = bfs(graph2, start_node2)
+    print(bfs_traversal2)
+    start_node3 = 'E'
+    print(f"BFS Traversal of Graph 2, starting from node {start_node3}")
+    bfs_traversal3 = bfs(graph2, start_node3)
+    print(bfs_traversal3)
+
+if __name__ == "__main__":
+    main()
