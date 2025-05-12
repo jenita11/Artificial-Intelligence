@@ -1,0 +1,56 @@
+from collections import deque
+
+def is_valid_state(state):
+    m_left, c_left, boat = state
+    m_right = 3 - m_left
+    c_right = 3 - c_left
+    if m_left < 0 or c_left < 0 or m_right < 0 or c_right < 0:
+        return False
+    if m_left > 3 or c_left > 3 or m_right > 3 or c_right > 3:
+        return False
+    if (m_left > 0 and c_left > m_left) or (m_right > 0 and c_right > m_right):
+        return False
+    return True
+
+def get_possible_moves(state):
+    m_left, c_left, boat = state
+    moves = []
+    possible_moves = [(1, 0), (0, 1), (2, 0), (0, 2), (1, 1)]
+    for m, c in possible_moves:
+        if boat == 0:
+            new_state = (m_left - m, c_left - c, 1)
+        else:
+            new_state = (m_left + m, c_left + c, 0)
+        if is_valid_state(new_state):
+            moves.append(new_state)
+    return moves
+
+def solve_missionaries_cannibals():
+    initial_state = (3, 3, 0)
+    goal_state = (0, 0, 1)
+    visited = set()
+    queue = deque([(initial_state, [initial_state])])
+    while queue:
+        current_state, path = queue.popleft()
+        if current_state == goal_state:
+            return path
+        visited.add(current_state)
+        possible_moves = get_possible_moves(current_state)
+        for next_state in possible_moves:
+            if next_state not in visited:
+                queue.append((next_state, path + [next_state]))
+    return None
+
+def main():
+    solution = solve_missionaries_cannibals()
+    if solution:
+        print("Solution Steps:")
+        for i, state in enumerate(solution):
+            m_left, c_left, boat = state
+            boat_side = "Left" if boat == 0 else "Right"
+            print(f"Step {i + 1}: Missionaries (Left) = {m_left}, Cannibals (Left) = {c_left}, Boat = {boat_side}")
+    else:
+        print("No solution found for the Missionaries and Cannibals problem.")
+
+if __name__ == "__main__":
+    main()
