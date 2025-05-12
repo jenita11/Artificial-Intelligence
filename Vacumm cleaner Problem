@@ -1,0 +1,70 @@
+import random
+
+def is_goal_state(state):
+    return all(room == 0 for room in state)
+
+def get_performance_measure(initial_state, final_state, path):
+    total_rooms = len(initial_state)
+    cleaned_rooms = sum(1 for i in range(total_rooms) if initial_state[i] == 1 and final_state[i] == 0)
+    steps = len(path)
+    performance = (cleaned_rooms * 10) - steps
+    return performance
+
+def simulate_vacuum_cleaner(initial_state):
+    state = initial_state[:]
+    num_rooms = len(state)
+    current_position = random.randint(0, num_rooms - 1)
+    path = []
+    actions = ["left", "right", "suck"]
+    while not is_goal_state(state):
+        action = random.choice(actions)
+        path.append(action)
+        if action == "suck":
+            if state[current_position] == 1:
+                state[current_position] = 0
+        elif action == "left":
+            if current_position > 0:
+                current_position -= 1
+        elif action == "right":
+            if current_position < num_rooms - 1:
+                current_position += 1
+    performance = get_performance_measure(initial_state, state, path)
+    return state, path, performance
+
+
+
+def main():
+    while True:
+        try:
+            num_rooms = int(input("Enter the number of rooms: "))
+            if num_rooms <= 0:
+                print("Number of rooms must be a positive integer.")
+                continue
+            break
+        except ValueError:
+            print("Invalid input. Please enter an integer.")
+
+    while True:
+        initial_state = input(f"Enter the initial state of the rooms (e.g., {' '.join(['1' for _ in range(num_rooms)])}): ").split()
+        if len(initial_state) != num_rooms:
+            print(f"Incorrect number of values. Please enter {num_rooms} values (0 or 1).")
+            continue
+        try:
+            initial_state = [int(room) for room in initial_state]
+            if not all(room in [0, 1] for room in initial_state):
+                print("Invalid room state.  Use only 0 (clean) or 1 (dirty).")
+                continue
+            break
+        except ValueError:
+            print("Invalid input. Please enter 0 or 1 for each room.")
+
+    print("Initial State:", initial_state)
+    final_state, path, performance = simulate_vacuum_cleaner(initial_state)
+    print("Final State:", final_state)
+    print("Path:", path)
+    print("Performance:", performance)
+
+
+
+if __name__ == "__main__":
+    main()
