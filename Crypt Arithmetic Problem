@@ -1,0 +1,39 @@
+import re
+
+def solve_crypto_arithmetic(equation):
+    parts = re.split(r'\s*==\s*', equation)
+    if len(parts) != 2:
+        return None
+    words = re.split(r'\s*\+\s*', parts[0])
+    result_word = parts[1]
+    letters = "".join(sorted(set("".join(words + [result_word]))))
+    num_letters = len(letters)
+    if num_letters > 10:
+        return None
+    import itertools
+    for digits in itertools.permutations(range(10), num_letters):
+        letter_to_digit = dict(zip(letters, digits))
+        def evaluate_word(word):
+            if not word:
+                return 0
+            return int("".join(str(letter_to_digit[char]) for char in word))
+        if any(letter_to_digit[word[0]] == 0 for word in words + [result_word] if word):
+            continue
+        sum_of_words = sum(evaluate_word(word) for word in words)
+        result = evaluate_word(result_word)
+        if sum_of_words == result:
+            return letter_to_digit
+    return None
+
+def main():
+    equation = input("Enter the crypto-arithmetic equation (e.g., SEND + MORE == MONEY): ")
+    solution = solve_crypto_arithmetic(equation)
+    if solution:
+        print("\nSolution:")
+        for letter, digit in solution.items():
+            print(f"{letter} = {digit}")
+    else:
+        print("\nNo solution found for the given equation.")
+
+if __name__ == "__main__":
+    main()
