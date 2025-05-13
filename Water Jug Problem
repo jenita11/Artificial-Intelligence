@@ -1,15 +1,16 @@
 def water_jug_problem(capacity_a, capacity_b, target):
     if target > max(capacity_a, capacity_b) or target < 0:
         return None
-    if capacity_a == 0 and capacity_b == 0 and target != 0:
-        return None
     visited = set()
+    # Queue elements are (a, b, path), where path is a list of (operation, a, b)
     queue = [(0, 0, [])]
+    visited.add((0, 0))
+    
     while queue:
         a, b, path = queue.pop(0)
         if a == target or b == target:
-            return path + [(a, b)]
-        visited.add((a, b))
+            return path + [("Goal", a, b)]
+        
         operations = [
             ("Fill A", capacity_a, b),
             ("Fill B", a, capacity_b),
@@ -18,9 +19,11 @@ def water_jug_problem(capacity_a, capacity_b, target):
             ("Pour A to B", max(0, a - (capacity_b - b)), min(capacity_b, a + b)),
             ("Pour B to A", min(capacity_a, a + b), max(0, b - (capacity_a - a))),
         ]
+        
         for op_name, next_a, next_b in operations:
             if (next_a, next_b) not in visited:
-                queue.append((next_a, next_b, path + [(a, b)]))
+                visited.add((next_a, next_b))
+                queue.append((next_a, next_b, path + [(op_name, a, b)]))
     return None
 
 def main():
@@ -31,14 +34,11 @@ def main():
         if capacity_a < 0 or capacity_b < 0 or target < 0:
             print("Capacities and target must be non-negative integers.")
             return
-        if capacity_a == 0 and capacity_b == 0 and target != 0:
-            print("No solution exists.  You cannot reach the target with zero capacity jugs.")
-            return
         solution = water_jug_problem(capacity_a, capacity_b, target)
         if solution:
             print("\nSolution Steps:")
-            for i, (a, b) in enumerate(solution):
-                print(f"Step {i + 1}: Jug A = {a}, Jug B = {b}")
+            for i, (op, a, b) in enumerate(solution):
+                print(f"Step {i + 1}: {op.ljust(12)} -> Jug A = {a}, Jug B = {b}")
         else:
             print("\nNo solution found for the given capacities and target.")
     except ValueError:
